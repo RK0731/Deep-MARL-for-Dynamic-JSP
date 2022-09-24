@@ -59,7 +59,7 @@ class shopfloor:
         if 'DRL' in kwargs and kwargs['DRL']:
             print("---> DRL Sequencing mode ON <---")
             self.sequencing_brain = validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
-            DDQN_SI = 0, TEST = 0, A2C = 0, IQL = 0, bsf_DDQN = 1, show = 0,  reward_function = 3 )
+            TEST = 0, bsf_DDQN = 1, show = 0,  reward_function = 1)
 
 
     def simulation(self):
