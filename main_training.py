@@ -7,7 +7,6 @@ import numpy as np
 import Asset_machine as Machine
 import Event_job_creation
 import Event_breakdown_creation
-import heterogeneity_creation
 import Brain_sequencing
 import validation
 
@@ -39,10 +38,7 @@ class shopfloor:
 
         #STEP 5: add a brain to the shop floor
         self.brain = Brain_sequencing.brain(self.env, self.job_creator, self.m_list, self.span/10, self.span,
-            DDQN_SI = 0, TEST = 1, A2C = 0, IQL = 0, I_DDQN = 0,
-            N_2019 = 0, U_2020 = 0, O_2021 = 0,
-            AS = 0, TEST_AS = 0, IQL_AS = 0, I_DDQN_AS = 0,
-            expert = 0, bsf_start = 0, reward_function = 3)
+            TEST = 0, reward_function = 1, bsf_start = 0)
 
     # FINAL STEP: start the simulaiton, and plot the loss/ reward record
     def simulation(self):

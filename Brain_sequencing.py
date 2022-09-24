@@ -63,7 +63,7 @@ class brain:
             self.address_seed = "{}\\trained_models\\TEST_DDQN_rwd"+str(kwargs['reward_function'])+".pt"
             self.build_state = self.state_direct
             #self.train = self.train_prioritized_DDQN
-            self.train = self.train_DQN
+            self.train = self.train_Double_DQN
             self.action_DRL = self.action_direct
             for m in self.m_list:
                 m.build_state = self.state_direct
@@ -592,3 +592,53 @@ class network_value_based(nn.Module):
         x = self.network[1](x)
         #print('output',x)
         return x
+
+class network_TEST(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(network_TEST, self).__init__()
+        self.lr = 0.005
+        self.input_size = input_size
+        self.output_size = output_size
+        self.flattened_input_size = torch.tensor(self.input_size).prod()
+        # FCNN parameters
+        layer_1 = 64
+        layer_2 = 48
+        layer_3 = 48
+        layer_4 = 36
+        layer_5 = 24
+        layer_6 = 12
+        # normalization modules
+        self.norm_layer = nn.Sequential(
+                                nn.LayerNorm(self.input_size),
+                                nn.Flatten()
+                                )
+        # shared layers of machines
+        self.FC_layers = nn.Sequential(
+                                nn.Linear(self.flattened_input_size, layer_1),
+                                nn.Tanh(),
+                                nn.Linear(layer_1, layer_2),
+                                nn.Tanh(),
+                                nn.Linear(layer_2, layer_3),
+                                nn.Tanh(),
+                                nn.Linear(layer_3, layer_4),
+                                nn.Tanh(),
+                                nn.Linear(layer_4, layer_5),
+                                nn.Tanh(),
+                                nn.Linear(layer_5, layer_6),
+                                nn.Tanh(),
+                                nn.Linear(layer_6, output_size)
+                                )
+        # Huber loss function
+        self.loss_func = F.smooth_l1_loss
+        # the universal network for all scheudling agents
+        self.network = nn.ModuleList([self.norm_layer, self.FC_layers])
+        # accompanied by optimizer
+        self.optimizer = optim.SGD(self.network.parameters(), lr=self.lr, momentum = 0.9)
+
+    def forward(self, x, *args):
+        #print('original',x)
+        x = self.network[0](x)
+        x = self.network[1](x)
+        #print('output',x)
+        return x
+
