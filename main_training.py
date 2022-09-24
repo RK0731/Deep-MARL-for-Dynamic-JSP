@@ -10,6 +10,10 @@ import Event_breakdown_creation
 import Brain_sequencing
 import validation
 
+'''
+Train deep MARL agents in simulation
+'''
+
 class shopfloor:
     def __init__(self,env,span,m_no,**kwargs):
         # STEP 1: create environment for simulation and control parameters
