@@ -6,7 +6,7 @@ from tabulate import tabulate
 import pandas as pd
 from pandas import DataFrame
 
-import Rule_sequencing
+import Rule_sequencing as Sequencing
 import Asset_machine as Machine
 import Static_job_creation
 import validation
@@ -41,7 +41,7 @@ class shopfloor:
         if 'sequencing_rule' in kwargs:
             print(" machines use {} sequencing rule".format(kwargs['sequencing_rule']))
             for m in self.m_list:
-                order = "m.job_sequencing = sequencing." + kwargs['sequencing_rule']
+                order = "m.job_sequencing = Sequencing." + kwargs['sequencing_rule']
                 try:
                     exec(order)
                 except:
