@@ -1,6 +1,5 @@
 import simpy
 import sys
-sys.path #sometimes need this to refresh the path
 import matplotlib.pyplot as plt
 import numpy as np
 from tabulate import tabulate
@@ -11,6 +10,10 @@ import Asset_machine as Machine
 import Rule_sequencing as Sequencing
 import Event_job_creation
 import validation
+
+'''
+Run the simulation and compare the result with other priority rules
+'''
 
 class shopfloor:
     def __init__(self, env, span, m_no, **kwargs):
@@ -42,7 +45,6 @@ class shopfloor:
             exec(expr3)
 
         # STEP 5: set sequencing or routing rules, and DRL
-        # check if need to reset sequencing rule
         if 'sequencing_rule' in kwargs:
             print("Taking over: machines use {} sequencing rule".format(kwargs['sequencing_rule']))
             for m in self.m_list:
@@ -53,24 +55,22 @@ class shopfloor:
                     print("Rule assigned to machine {} is invalid !".format(m.m_label))
                     raise Exception
 
-        # specify the architecture of DRL
+        # if DRL is used in this run
         if 'DRL' in kwargs and kwargs['DRL']:
             print("---> DRL Sequencing mode ON <---")
             self.sequencing_brain = validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
             DDQN_SI = 0, TEST = 0, A2C = 0, IQL = 0, bsf_DDQN = 1, show = 0,  reward_function = 3 )
 
+
     def simulation(self):
         self.env.run()
+
 
 # dictionary to store shopfloors and production record
 spf_dict = {}
 production_record = {}
-# list of experiments
+# list of benchmarks 
 benchmark = ['FIFO','PTWINQS','DPTLWKRS','MDD','MOD']
-'''
-benchmark = ['FIFO','ATC','AVPRO','COVERT','CR','EDD','LWKR','MDD','MOD','MS','NPT','SPT','WINQ','CRSPT','LWKRSPT','LWKRMOD','PTWINQ','PTWINQS','DPTLWKRS','DPTWINQNPT']
-'''
-
 title = benchmark + ['deep MARL-RS']
 # experiment settings
 span = 1000
@@ -79,7 +79,7 @@ sum_record = []
 benchmark_record = []
 max_record = []
 rate_record = []
-iteration = 1
+iteration = 10
 export_result = 0
 
 for run in range(iteration):
@@ -138,13 +138,7 @@ for rank,rule in enumerate(rank):
 
 # check the parameter and scenario setting
 spf.sequencing_brain.check_parameter()
-'''
-print(title)
-print(sum_record)
-print(rate_record)
-print(max_record)
-print(winning_rate)
-'''
+
 if export_result:
     df_win_rate = DataFrame([winning_rate], columns=title)
     #print(df_win_rate)
