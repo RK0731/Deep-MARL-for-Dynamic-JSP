@@ -1,6 +1,5 @@
 import numpy as np
 import sys
-import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -9,6 +8,10 @@ import Brain_sequencing
 from torch.distributions import Categorical
 from tabulate import tabulate
 import Rule_sequencing
+
+'''
+This module is used for applying trained parameters in the experiments
+'''
 
 class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions from brain class
     def __init__(self, env, machine_list, job_creator, span, *args, **kwargs):
@@ -27,30 +30,7 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
             print('WARNING: reward function is not specified')
             raise Exception
         # build action NN for each target machine
-        if 'A2C' in kwargs and kwargs['A2C']:
-            print("---> A2C MODE ON <---")
-            self.address_seed = "{}\\trained_models\\A2C_rwd" + str(kwargs['reward_function']) + ".pt"
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.input_size_as_list = list(self.input_size)
-            self.output_size = 4
-            self.network = Brain_sequencing.network_ActorCritic(self.input_size, self.output_size)
-            self.network.actor.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_A2C
-                self.build_state = self.state_direct
-        elif 'bsf_A2C' in kwargs and kwargs['bsf_A2C']:
-            print("---> BSF A2C ON <---")
-            self.address_seed = "{}\\trained_models\\bsf_A2C.pt"
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.output_size = 4
-            self.network = Brain_sequencing.network_ActorCritic(self.input_size, self.output_size)
-            self.network.actor.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_A2C
-                self.build_state = self.state_direct
-        elif 'bsf_DDQN' in kwargs and kwargs['bsf_DDQN']:
+        if 'bsf_DDQN' in kwargs and kwargs['bsf_DDQN']:
             print("---> BSF DDQN ON <---")
             self.address_seed = "{}/trained_models/bsf_DDQN.pt"
             # adaptive input size
@@ -102,34 +82,6 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
             for m in self.m_list:
                 m.job_sequencing = self.action_direct_SI
                 self.build_state = self.state_direct
-        elif 'IQL' in kwargs and kwargs['IQL']: # baseline, independent DQN agents
-            print("---> Baseline ON <---")
-            self.address_seed = "{}\\trained_models\\independent\\IQL_rwd"+str(kwargs['reward_function'])+"_{}.pt"
-            # adaptive input size
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.input_size_as_list = list(self.input_size)
-            self.output_size = 4
-            self.network = Brain_sequencing.network_independent(self.input_size, self.output_size, len(self.m_list))
-            for m in self.m_list:
-                self.network.network_dict[m.m_idx].load_state_dict(torch.load(self.address_seed.format(sys.path[0], m.m_idx)))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_direct
-                self.build_state = self.state_direct
-        elif 'I_DDQN' in kwargs and kwargs['I_DDQN']: # baseline, independent DQN agents
-            print("---> Independent Double DQN ON <---")
-            self.address_seed = "{}\\trained_models\\independent\\I_DDQN_rwd"+str(kwargs['reward_function'])+"_{}.pt"
-            # adaptive input size
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.input_size_as_list = list(self.input_size)
-            self.output_size = 4
-            self.network = Brain_sequencing.network_independent(self.input_size, self.output_size, len(self.m_list))
-            for m in self.m_list:
-                self.network.network_dict[m.m_idx].load_state_dict(torch.load(self.address_seed.format(sys.path[0], m.m_idx)))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_direct
-                self.build_state = self.state_direct
         elif 'import_from' in kwargs and kwargs['import_from']:
             print("---> VALIDATION MODE <---")
             self.address_seed = "{}\\trained_models\\" + str(kwargs['import_from']) + ".pt"
@@ -141,60 +93,6 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
             for m in self.m_list:
                 m.job_sequencing = self.action_direct
                 self.build_state = self.state_direct
-        elif 'TEST_AS' in kwargs and kwargs['TEST_AS']:
-            print("---> VALIDATION MODE <---")
-            self.address_seed = "{}\\trained_models\\TEST_AS_rwd"+str(kwargs['reward_function'])+".pt"
-            self.input_size =  len(self.state_multi_channel(self.m_list[0].sequencing_data_generation()))
-            self.input_size_as_list = [1,self.input_size]
-            self.func_list = [Rule_sequencing.SPT, Rule_sequencing.WINQ, Rule_sequencing.MS, Rule_sequencing.CR]
-            self.output_size = 4
-            self.network = Brain_sequencing.network_TEST_AS(self.input_size, self.output_size)
-            self.network.network.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_AS
-                self.build_state = self.state_multi_channel
-        elif 'AS' in kwargs and kwargs['AS']:
-            print("---> VALIDATION MODE <---")
-            self.address_seed = "{}\\trained_models\\Abstracted_state_rwd"+str(kwargs['reward_function'])+".pt"
-            self.input_size =  len(self.state_multi_channel(self.m_list[0].sequencing_data_generation()))
-            self.input_size_as_list = [1,self.input_size]
-            self.func_list = [Rule_sequencing.SPT, Rule_sequencing.WINQ, Rule_sequencing.MS, Rule_sequencing.CR]
-            self.output_size = 4
-            self.network = Brain_sequencing.network_AS(self.input_size, self.output_size)
-            self.network.network.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_AS
-                self.build_state = self.state_multi_channel
-        elif 'IQL_AS' in kwargs and kwargs['IQL_AS']: # baseline, independent DQN agents
-            print("---> IQL_AS ON <---")
-            self.address_seed = "{}\\trained_models\\independent\\IQL_AS_rwd"+str(kwargs['reward_function'])+"_{}.pt"
-            self.input_size =  len(self.state_multi_channel(self.m_list[0].sequencing_data_generation()))
-            self.input_size_as_list = [1,self.input_size]
-            self.func_list = [Rule_sequencing.SPT, Rule_sequencing.WINQ, Rule_sequencing.MS, Rule_sequencing.CR]
-            self.output_size = 4
-            self.network = Brain_sequencing.network_independent_AS(self.input_size, self.output_size, len(self.m_list))
-            for m in self.m_list:
-                self.network.network_dict[m.m_idx].load_state_dict(torch.load(self.address_seed.format(sys.path[0], m.m_idx)))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_AS
-                self.build_state = self.state_multi_channel
-        elif 'I_DDQN_AS' in kwargs and kwargs['I_DDQN_AS']: # baseline, independent DQN agents
-            print("---> I_DDQN_AS ON <---")
-            self.address_seed = "{}\\trained_models\\independent\\I_DDQN_AS_rwd"+str(kwargs['reward_function'])+"_{}.pt"
-            self.input_size =  len(self.state_multi_channel(self.m_list[0].sequencing_data_generation()))
-            self.input_size_as_list = [1,self.input_size]
-            self.func_list = [Rule_sequencing.SPT, Rule_sequencing.WINQ, Rule_sequencing.MS, Rule_sequencing.CR]
-            self.output_size = 4
-            self.network = Brain_sequencing.network_independent_AS(self.input_size, self.output_size, len(self.m_list))
-            for m in self.m_list:
-                self.network.network_dict[m.m_idx].load_state_dict(torch.load(self.address_seed.format(sys.path[0], m.m_idx)))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_AS
-                self.build_state = self.state_multi_channel
         else:
             print("---X DEFAULT (DDQN) mode ON X---")
             self.address_seed = "{}\\trained_models\\DDQN_rwd"+str(kwargs['reward_function'])+".pt"

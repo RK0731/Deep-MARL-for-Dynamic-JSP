@@ -2,17 +2,14 @@ import simpy
 import sys
 sys.path #sometimes need this to refresh the path
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-import torch
 import numpy as np
 from tabulate import tabulate
 import pandas as pd
 from pandas import DataFrame
 
 import Asset_machine as Machine
+import Rule_sequencing as Sequencing
 import Event_job_creation
-import Event_breakdown_creation
-import heterogeneity_creation
 import validation
 
 class shopfloor:
@@ -49,7 +46,7 @@ class shopfloor:
         if 'sequencing_rule' in kwargs:
             print("Taking over: machines use {} sequencing rule".format(kwargs['sequencing_rule']))
             for m in self.m_list:
-                order = "m.job_sequencing = sequencing." + kwargs['sequencing_rule']
+                order = "m.job_sequencing = Sequencing." + kwargs['sequencing_rule']
                 try:
                     exec(order)
                 except:
