@@ -4,23 +4,28 @@ import sys
 import Static_genetic_algorithm
 import pandas as pd
 import time
-
 path = sys.path
+
+'''
+run experiments on static problem instances
+'''
+
 with open('test.txt') as f:
     lines = f.readlines()
 operation_sequence = eval(lines[0])
 processing_time = eval(lines[1])
 due_date = eval(lines[2])
 
-#benchmark = ['SPT','MS','PTWINQS']
-benchmark = ['FIFO','PTWINQS']
+benchmark = ['FIFO']
 
 sum_record = []
 max_record = []
 rate_record = []
 no_record = []
 
-''' benchmark priority rules '''
+''' 
+1. benchmark priority rules 
+'''
 for idx,rule in enumerate(benchmark):
     # create the environment instance for simulation
     env = simpy.Environment()
@@ -40,7 +45,9 @@ for idx,rule in enumerate(benchmark):
     print(spf.job_creator.schedule)
 
 
-''' deep MARL / DRL approach '''
+''' 
+2. deep MARL / DRL approach 
+'''
 env = simpy.Environment()
 spf = shopfloor(env, operation_sequence, processing_time, due_date, MR = True)
 spf.simulation()
@@ -62,7 +69,10 @@ print(sum_record)
 print('No. of tardy jobs')
 print(no_record)
 
-''' Genetic Algorithm '''
+
+''' 
+3. Genetic Algorithm 
+'''
 population_size = 100
 generation = 50
 GA = Static_genetic_algorithm.creation(operation_sequence, processing_time, due_date, population_size, generation)
