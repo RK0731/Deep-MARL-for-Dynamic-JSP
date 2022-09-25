@@ -10,6 +10,7 @@ import numpy as np
 '''
 Simplified simulation model based on SimPy for fastest fitness evaluation
 '''
+
 class shopfloor:
     def __init__(self, operation_sequence, processing_time, due_date, **kwargs):
         # get the machine and job number from job's information
