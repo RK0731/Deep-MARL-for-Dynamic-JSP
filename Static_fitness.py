@@ -5,7 +5,6 @@ import pandas as pd
 from tabulate import tabulate
 from pandas import DataFrame
 import numpy as np
-import Static_gantt_chart
 
 
 '''
@@ -154,23 +153,3 @@ class shopfloor:
             self.pt.pop(idx)
             self.schedule.pop(idx)
 
-
-'''
-Test
-'''
-class fitness_test:
-    def __init__(self, schedule, plot):
-        with open('test.txt') as f:
-            lines = f.readlines()
-        operation_sequence = eval(lines[0])
-        processing_time = eval(lines[1])
-        due_date = eval(lines[2])
-        spf = shopfloor(operation_sequence, processing_time, due_date)
-        spf.check_schedule(schedule, operation_sequence)
-        for i in range(1):
-            score = spf.reset_and_execution(schedule)
-            print(spf.record)
-            print("Cumulative tardiness: ",spf.tardiness)
-            print('Tardy job no.: ', spf.tardy_no)
-        if plot:
-            Static_gantt_chart.draw(spf.record, spf.m_no, spf.due_date)
