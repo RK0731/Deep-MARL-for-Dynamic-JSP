@@ -1,14 +1,10 @@
 import simpy
-import sys
-sys.path #sometimes need this to refresh the path
 import matplotlib.pyplot as plt
 import numpy as np
 
 import Asset_machine as Machine
 import Event_job_creation
-import Event_breakdown_creation
 import Brain_sequencing
-import Validation
 
 '''
 Train deep MARL agents in simulation
@@ -40,7 +36,7 @@ class shopfloor:
             expr3 = '''self.m_{}.initialization(self.m_list,self.job_creator)'''.format(i) # initialize all machines
             exec(expr3)
 
-        #STEP 5: add a brain to the shop floor
+        #STEP 5: speficy the type of deep MARL scheduler
         self.brain = Brain_sequencing.brain(self.env, self.job_creator, self.m_list, self.span/10, self.span,
             TEST = 0, reward_function = 1, bsf_start = 0)
 
@@ -55,8 +51,8 @@ class shopfloor:
 
 # create the environment instance for simulation
 env = simpy.Environment()
-span = 10000
-scale = 10
+span = 10000 # duration of simulation/training
+scale = 10 # number of machines
 show = True
 # create the shop floor instance
 # the command of startig the simulation is included in shopfloor instance, run till there's no more events
