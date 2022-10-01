@@ -1,9 +1,9 @@
 # A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem
 This repository includes the code used in the paper submission: 
 
-**Liu, R.**, Piplani, R., & Toro, C. (2022). A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem. Computers and Operations Research.
+Liu, R., Piplani, R., & Toro, C. (2022). A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem. Computers and Operations Research.
 
-The manuscript is currently under review. Please use the code in your own research only after the publication of paper.
+The manuscript is currently under review. **Please use the code in your own research only after the publication of paper.**
 
 ## Repository Overview
 
@@ -22,4 +22,5 @@ Data and trained parameters can be found in folders:
 ## User Guide
 
 To use our code as the benchmark, kindly refer to "trained_models" for trained parameters, and use the class "network_value_based" within "Brain_sequencing.py" file to build the neural network. 
+
 An alternative way is to test your approach in our simulation model and context, you may specify your algorithm in "Main_experiment.py" and run the simulation for comparison.
