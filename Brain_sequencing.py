@@ -3,8 +3,6 @@ import numpy as np
 import sys
 import copy
 import matplotlib.pyplot as plt
-
-sys.path  # call this otherwise it will raise excepetion if you use another computer
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -13,7 +11,7 @@ from torch.distributions import Categorical
 from tabulate import tabulate
 
 '''
-The deep MARL learning algorithm
+The deep MARL learning/training algorithm
 '''
 
 class brain:
@@ -49,7 +47,7 @@ class brain:
         chooose the architecture of DRL, then state and action funciton is determined accordlingly
         and specify the address to store the trained state-dict
         needs to be specified in kwargs, otherwise abstract networks + abstract state space
-        NOTE there is an action_NN that perform the actual action and be trained
+        there is an action_NN that perform the actual action and be trained
         and a target_NN to improve the stability of training
         '''
 
@@ -82,7 +80,7 @@ class brain:
                 m.build_state = self.state_direct
 
         '''
-        sometimes train based on trained parameters can save a lot of time
+        sometimes train based on trained parameters can save time
         importing trained parameters from specified address
         '''
         if kwargs['bsf_start']: # import best for far trained parameters to kick off
@@ -133,12 +131,12 @@ class brain:
         for x in self.action_NN.parameters():
             print(np.prod(list(x.shape)))
 
+
     '''
     1. downwards for functions that required for the simulation
        including the warm-up, action functions and multiple sequencing rules
        those functions are also used by validation module
     '''
-
 
     def warm_up_process(self): # warm up with random exploration
         print("random exploration from time {} to time {}".format(self.env.now, self.warm_up))
@@ -333,8 +331,8 @@ class brain:
 
 
     '''
-    4. downwards are functions used in the training of DRL, including the dynamic training process
-       dynamic training parameters update
+    4. downwards are functions used in the training
+       such as the main training process, and training parameters update
     '''
 
 
@@ -485,7 +483,7 @@ class brain:
 
 
 '''
-class of sequencing functions to kick-off the training
+class of sequencing functions to kick-off the training (optional)
 '''
 class sqc_func:
     def PTWINQS(s_t):

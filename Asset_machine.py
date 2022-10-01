@@ -1,13 +1,12 @@
 import simpy
-import sys
-sys.path
-import random
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
 from tabulate import tabulate
 import Rule_sequencing
 
+'''
+Simulation of machine, able to immitate the job processing, machine idle and machine breakdown
+'''
 
 class machine:
     def __init__(self, env, index, *args, **kwargs):
@@ -416,7 +415,6 @@ class machine:
     '''
     4. downwards are functions related to the calculation of reward and construction of state
        only be called if the sequencing learning mode is activated
-       the options of reward function are listed at bottom
     '''
 
 
@@ -467,6 +465,7 @@ class machine:
     def get_reward0(self):
         return
 
+    # an example of reward function, the performance of learning algorithm can be improved by parameter fine-tuning
     def get_reward1(self):
         '''1. retrive the production record of job'''
         job_record = self.job_creator.production_record[self.job_idx]
@@ -481,87 +480,6 @@ class machine:
             restructured_wait = queued_time*(1-exposure) + np.append(np.delete(queued_time*exposure,0),0)
             restructured_wait *= critical_factor
             reward = - np.square(restructured_wait / 128).clip(0,1)
-            #print(reward)
-            reward = torch.FloatTensor(reward)
-        else:
-            reward = torch.ones(len(queued_time),dtype=torch.float)*0
-        '''3. and assign the reward to incomplete experience, make them ready to be learned'''
-        for i,m_idx in enumerate(path):
-            r_t = reward[i]
-            decision_point = job_record[0][i][0]
-            try:
-                self.job_creator.complete_experience(m_idx, decision_point, r_t)
-            except:
-                pass
-
-    def get_reward2(self):
-        '''1. retrive the production record of job'''
-        job_record = self.job_creator.production_record[self.job_idx]
-        path = job_record[1]
-        queued_time = np.array(job_record[2])
-        slack = np.array(job_record[3])
-        critical_factor = 1 - slack / (np.absolute(slack) + 80)
-        exposure = 0.2 # how much of waiting at succeeding machine is exposure to agent
-        '''2. calculate the reward for each agents'''
-        # if tardiness is non-zero and waiting time exists, machines in path get punishment
-        if self.tardiness and queued_time.sum():
-            restructured_wait = queued_time*(1-exposure) + np.append(np.delete(queued_time*exposure,0),0)
-            restructured_wait *= critical_factor
-            reward = - (restructured_wait / 128).clip(0,1)
-            #print(reward)
-            reward = torch.FloatTensor(reward)
-        else:
-            reward = torch.ones(len(queued_time),dtype=torch.float)*0
-        '''3. and assign the reward to incomplete experience, make them ready to be learned'''
-        for i,m_idx in enumerate(path):
-            r_t = reward[i]
-            decision_point = job_record[0][i][0]
-            try:
-                self.job_creator.complete_experience(m_idx, decision_point, r_t)
-            except:
-                pass
-
-    def get_reward3(self):
-        '''1. retrive the production record of job'''
-        job_record = self.job_creator.production_record[self.job_idx]
-        path = job_record[1]
-        queued_time = np.array(job_record[2])
-        slack = np.array(job_record[3])
-        critical_factor = 1 - slack / (np.absolute(slack) + 80)
-        exposure = 0.2 # how much of waiting at succeeding machine is exposure to agent
-        '''2. calculate the reward for each agents'''
-        # if tardiness is non-zero and waiting time exists, machines in path get punishment
-        if self.tardiness and queued_time.sum():
-            restructured_wait = queued_time*(1-exposure) + np.append(np.delete(queued_time*exposure,0),0)
-            restructured_wait *= critical_factor
-            reward = - np.square(restructured_wait / 128).clip(0,1)
-            #print(reward)
-            reward = torch.FloatTensor(reward)
-        else:
-            reward = torch.ones(len(queued_time),dtype=torch.float)*0
-        '''3. and assign the reward to incomplete experience, make them ready to be learned'''
-        for i,m_idx in enumerate(path):
-            r_t = reward[i]
-            decision_point = job_record[0][i][0]
-            try:
-                self.job_creator.complete_experience(m_idx, decision_point, r_t)
-            except:
-                pass
-
-    def get_reward4(self):
-        '''1. retrive the production record of job'''
-        job_record = self.job_creator.production_record[self.job_idx]
-        path = job_record[1]
-        queued_time = np.array(job_record[2])
-        slack = np.array(job_record[3])
-        critical_factor = 1 - slack / (np.absolute(slack) + 90)
-        exposure = 0.2 # how much of waiting at succeeding machine is exposure to agent
-        '''2. calculate the reward for each agents'''
-        # if tardiness is non-zero and waiting time exists, machines in path get punishment
-        if self.tardiness and queued_time.sum():
-            restructured_wait = queued_time*(1-exposure) + np.append(np.delete(queued_time*exposure,0),0)
-            restructured_wait *= critical_factor
-            reward = - np.square(restructured_wait / 256).clip(0,1)
             #print(reward)
             reward = torch.FloatTensor(reward)
         else:

@@ -5,6 +5,10 @@ sys.path
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 
+'''
+Dynamic arrival of jobs
+'''
+
 class creation:
     def __init__ (self, env, span, machine_list, pt_range, due_tightness, E_utliz, **kwargs):
         if 'seed' in kwargs:

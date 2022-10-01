@@ -1,5 +1,9 @@
 import numpy as np
 
+'''
+suspend mahcines for a while when needed
+'''
+
 class creation:
     def __init__(self, env, machine_list, target_index, event_intervals, duration,**kwargs):
         self.env = env
