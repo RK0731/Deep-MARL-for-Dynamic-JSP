@@ -3,7 +3,7 @@ This repository includes the code used in the paper submission:
 
 Liu, R., Piplani, R., & Toro, C. (2022). A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem. Computers and Operations Research.
 
-The manuscript is currently under review. **Please use the code in your own research only after the publication of paper.**
+The manuscript is currently under review. **We would much appreciate if you use the code in your own research only after the publication of paper.**
 
 ## Repository Overview
 
