@@ -1,5 +1,3 @@
-import simpy
-import time
 from time import process_time_ns
 import random
 import numpy as np
