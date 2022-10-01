@@ -1,6 +1,5 @@
 import simpy
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
 from tabulate import tabulate
 import pandas as pd
@@ -59,7 +58,7 @@ class shopfloor:
         if 'DRL' in kwargs and kwargs['DRL']:
             print("---> DRL Sequencing mode ON <---")
             self.sequencing_brain = Validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
-            TEST = 0, bsf_DDQN = 1, show = 0,  reward_function = 1)
+            TEST = 0, validated = 1, show = 0,  reward_function = 1)
 
 
     def simulation(self):
@@ -89,7 +88,7 @@ for run in range(iteration):
     max_record.append([])
     rate_record.append([])
     seed = np.random.randint(2000000000)
-    # run simulation with different rules
+    # runs with different rules
     for idx,rule in enumerate(benchmark):
         # create the environment instance for simulation
         env = simpy.Environment()
@@ -100,7 +99,7 @@ for run in range(iteration):
         benchmark_record[run].append(cumulative_tard[-1])
         max_record[run].append(tard_max)
         rate_record[run].append(tard_rate)
-    # an extra run with DRL
+    # a run with DRL
     env = simpy.Environment()
     spf = shopfloor(env, span, scale, DRL = True, seed = seed)
     spf.simulation()

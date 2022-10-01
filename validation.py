@@ -7,7 +7,6 @@ import torch.nn.functional as F
 import Brain_sequencing
 from torch.distributions import Categorical
 from tabulate import tabulate
-import Rule_sequencing
 
 '''
 This module is used for applying trained parameters in the experiments
@@ -30,27 +29,14 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
             print('WARNING: reward function is not specified')
             raise Exception
         # build action NN for each target machine
-        if 'bsf_DDQN' in kwargs and kwargs['bsf_DDQN']:
-            print("---> BSF DDQN ON <---")
-            self.address_seed = "{}/trained_models/bsf_DDQN.pt"
+        if 'validated' in kwargs and kwargs['validated']:
+            print("---> Validated Mode ON <---")
+            self.address_seed = "{}/trained_models/validated.pt"
             # adaptive input size
             self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
             self.input_size_as_list = list(self.input_size)
             self.output_size = 4
             self.network = Brain_sequencing.network_value_based(self.input_size, self.output_size)
-            self.network.network.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_direct
-                self.build_state = self.state_direct
-        elif 'bsf_TEST' in kwargs and kwargs['bsf_TEST']:
-            print("---> BSF TEST ON <---")
-            self.address_seed = "{}\\trained_models\\bsf_TEST.pt"
-            # adaptive input size
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.input_size_as_list = list(self.input_size)
-            self.output_size = 4
-            self.network = Brain_sequencing.network_TEST(self.input_size, self.output_size)
             self.network.network.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
             self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
             for m in self.m_list:
@@ -58,7 +44,7 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
                 self.build_state = self.state_direct
         elif 'TEST' in kwargs and kwargs['TEST']:
             print("---!!! TEST mode ON !!!---")
-            self.address_seed = "{}\\trained_models\\TEST_DDQN_rwd"+str(kwargs['reward_function'])+".pt"
+            self.address_seed = "{}/trained_models/TEST_DDQN_rwd"+str(kwargs['reward_function'])+".pt"
             # adaptive input size
             self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
             self.input_size_as_list = list(self.input_size)
@@ -69,22 +55,9 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
             for m in self.m_list:
                 m.job_sequencing = self.action_direct
                 self.build_state = self.state_direct
-        elif 'DDQN_SI' in kwargs and kwargs['DDQN_SI']:
-            print("---> SI mode ON <---")
-            self.address_seed = "{}\\trained_models\\DDQN_SI_rwd"+str(kwargs['reward_function'])+".pt"
-            # adaptive input size
-            self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
-            self.input_size_as_list = list(self.input_size)
-            self.output_size = 5
-            self.network = Brain_sequencing.network_value_based(self.input_size, self.output_size)
-            self.network.network.load_state_dict(torch.load(self.address_seed.format(sys.path[0])))
-            self.network.eval()  # must have this if you're loading a model, unnecessray for loading state_dict
-            for m in self.m_list:
-                m.job_sequencing = self.action_direct_SI
-                self.build_state = self.state_direct
         elif 'import_from' in kwargs and kwargs['import_from']:
             print("---> VALIDATION MODE <---")
-            self.address_seed = "{}\\trained_models\\" + str(kwargs['import_from']) + ".pt"
+            self.address_seed = "{}/trained_models/" + str(kwargs['import_from']) + ".pt"
             self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
             self.output_size = 4
             self.network = Brain_sequencing.network_value_based(self.input_size, self.output_size)
@@ -95,7 +68,7 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
                 self.build_state = self.state_direct
         else:
             print("---X DEFAULT (DDQN) mode ON X---")
-            self.address_seed = "{}\\trained_models\\DDQN_rwd"+str(kwargs['reward_function'])+".pt"
+            self.address_seed = "{}/trained_models/DDQN_rwd"+str(kwargs['reward_function'])+".pt"
             self.input_size = self.state_direct(self.m_list[0].sequencing_data_generation()).size()
             self.input_size_as_list = list(self.input_size)
             self.output_size = 4
