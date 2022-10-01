@@ -9,7 +9,7 @@ from pandas import DataFrame
 import Rule_sequencing as Sequencing
 import Asset_machine as Machine
 import Static_job_creation
-import validation
+import Validation
 
 '''
 Shop floor
@@ -54,7 +54,7 @@ class shopfloor:
         # specify the architecture of DRL
         if 'MR' in kwargs and kwargs['MR']:
             print("---> Minimal Repetition mode ON <---")
-            self.sequencing_brain = validation.DRL_sequencing(self.env, self.m_list, self.job_creator, 100, \
+            self.sequencing_brain = Validation.DRL_sequencing(self.env, self.m_list, self.job_creator, 100, \
             bsf_DDQN = 1, show = 0, reward_function = 3 )
 
 

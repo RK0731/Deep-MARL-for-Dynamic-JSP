@@ -8,7 +8,7 @@ import Asset_machine as Machine
 import Event_job_creation
 import Event_breakdown_creation
 import Brain_sequencing
-import validation
+import Validation
 
 '''
 Train deep MARL agents in simulation

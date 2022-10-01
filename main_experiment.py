@@ -9,7 +9,7 @@ from pandas import DataFrame
 import Asset_machine as Machine
 import Rule_sequencing as Sequencing
 import Event_job_creation
-import validation
+import Validation
 
 '''
 Run the simulation and compare the result with other priority rules
@@ -58,7 +58,7 @@ class shopfloor:
         # if DRL is used in this run
         if 'DRL' in kwargs and kwargs['DRL']:
             print("---> DRL Sequencing mode ON <---")
-            self.sequencing_brain = validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
+            self.sequencing_brain = Validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
             TEST = 0, bsf_DDQN = 1, show = 0,  reward_function = 1)
 
 

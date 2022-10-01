@@ -113,7 +113,7 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
         if 'show' in kwargs and kwargs['show']:
             self.show = True
 
-    '''action functions, different from brain module'''
+    '''action function, direct selection of job'''
     def action_direct(self, sqc_data):
         s_t = self.build_state(sqc_data)
         m_idx = sqc_data[-1]
@@ -128,71 +128,7 @@ class DRL_sequencing(Brain_sequencing.brain): # inherit a bunch of functions fro
         job_position, j_idx = self.action_conversion(a_t)
         return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
 
-    def action_direct_SI(self, sqc_data): # direct selection that allows strategic idleness
-        s_t = self.build_state(sqc_data)
-        m_idx = sqc_data[-1]
-        # input state to action network, produce the state-action value
-        value = self.network.forward(s_t.reshape([1]+self.input_size_as_list),m_idx).squeeze()
-        # greedy policy
-        a_t = value.argmax()
-        #print("State is:", s_t)
-        #print('State-Action Values:', value)
-        if a_t != self.output_size - 1:
-            self.strategic_idleness_bool = False # then no need do strategic idleness
-        if a_t == self.output_size - 1 and self.arriving_job_exists:
-            self.strategic_idleness_bool = True # implement strategic idleness
-        else:
-            a_t = value[:self.output_size-1].argmax() # eliminate the infeasible action
-            self.strategic_idleness_bool = False # no strategic idleness
-        if self.show:
-            print(value,a_t)
-        job_position, j_idx = self.action_conversion(a_t)
-        return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
-
-    def action_A2C(self, sqc_data):
-        s_t = self.build_state(sqc_data)
-        m_idx = sqc_data[-1]
-        # input state to action network, produce the state-action value
-        prob = self.network.actor_forward(s_t.reshape([1]+self.input_size_as_list))
-        # stochastic policy
-        a_t = Categorical(prob).sample()
-        self.strategic_idleness_bool = False # then no need do strategic idleness
-        if self.show:
-            print('A2C Action: %s'%(prob,a_t))
-        job_position, j_idx = self.action_conversion(a_t)
-        return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
-
-    def action_sqc_rule_value_based(self, sqc_data):
-        s_t = self.build_state(sqc_data)
-        m_idx = sqc_data[-1]
-        value = self.network.forward(s_t.reshape([1]+self.input_size_as_list),m_idx).squeeze()
-        a_t = torch.argmax(value)
-        self.strategic_idleness_bool = False
-        rule_a_t = self.func_list[a_t](s_t)
-        job_position, j_idx = self.action_conversion(rule_a_t)
-        return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
-
-    def action_sqc_rule_policy(self, sqc_data):
-        s_t = self.build_state(sqc_data)
-        m_idx = sqc_data[-1]
-        prob = self.network.actor_forward(s_t.reshape([1]+self.input_size_as_list)).squeeze()
-        a_t = Categorical(prob).sample()
-        self.strategic_idleness_bool = False
-        rule_a_t = self.func_list[a_t](s_t)
-        job_position, j_idx = self.action_conversion(rule_a_t)
-        return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
-
-    def action_AS(self, sqc_data):
-        s_t = self.build_state(sqc_data)
-        m_idx = sqc_data[-1]
-        # input state to policy network, produce the state-action value
-        value = self.network.forward(s_t.reshape([1,1,self.input_size]),m_idx)
-        # greedy policy
-        a_t = torch.argmax(value)
-        #print('Sequencing NN, action %s / By Brain'%(a_t))
-        job_position, self.strategic_idleness_bool, self.strategic_idleness_time = self.func_list[a_t](sqc_data)
-        return job_position, self.strategic_idleness_bool, self.strategic_idleness_time
-
+    ''' after experiment, see if it's the intended scenario'''
     def check_parameter(self):
         print('------------------ Sequencing Brain Parameter Check ------------------')
         print("Collect from:",self.address_seed)
