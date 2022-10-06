@@ -23,4 +23,4 @@ Data and trained parameters can be found in folders:
 
 To use our code as the benchmark, kindly refer to "trained_models" for trained parameters, and use the class "network_value_based" within "Brain_sequencing.py" file to build the neural network. 
 
-An alternative way is to test your approach in our simulation model and context, you may specify your algorithm in "Main_experiment.py" and run the simulation for comparison.
+An alternative way is to test your approach in our simulation model and context, you may create your algorithm and run the simulation in "Main_experiment.py" for comparison. Please refer to the comments in each module to see how to interact with the simulation model.
