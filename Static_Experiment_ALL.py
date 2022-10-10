@@ -49,7 +49,7 @@ for idx,rule in enumerate(benchmark):
 2. deep MARL / DRL approach 
 '''
 env = simpy.Environment()
-spf = shopfloor(env, operation_sequence, processing_time, due_date, MR = True)
+spf = shopfloor(env, operation_sequence, processing_time, due_date, validated = True)
 spf.simulation()
 output_time, cumulative_tard, tard_mean, tard_max, tard_rate = spf.job_creator.tardiness_output()
 cnt = 0
