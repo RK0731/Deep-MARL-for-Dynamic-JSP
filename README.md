@@ -21,6 +21,6 @@ Data and trained parameters can be found in folders:
 
 ## User Guide
 
-To use our code as the benchmark, kindly refer to "trained_models" folder for the trained parameters, and use the class "network_value_based" within "Brain_sequencing.py" file to build the neural network. 
+To use our code as the benchmark, kindly refer to "trained_models" folder for the trained parameters, and use the class "network_value_based" within "Brain_sequencing.py" file to build the neural network. The state and action functions can also be found in "Brain_sequencing.py" file.
 
 An alternative way is to test your approach in our simulation model and context, you may create your algorithm and run the simulation in "Main_experiment.py" for comparison. Please refer to the comments in each module to see how to interact with the simulation model.
