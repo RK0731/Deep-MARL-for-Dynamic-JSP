@@ -1,5 +1,10 @@
-# A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem
-This repository includes the code of COR paper:
+# Introduciton
+
+This repository includes the code of COR paper entitled **A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem**
+
+Free download link: https://authors.elsevier.com/a/1hIY215N8SNAtk
+
+Please consider citing our paper if you found it helpful ^-^
 
     @article{LIU2023106294,
     title = {A deep multi-agent reinforcement learning approach to solve dynamic job shop scheduling problem},
@@ -12,8 +17,6 @@ This repository includes the code of COR paper:
     url = {https://www.sciencedirect.com/science/article/pii/S0305054823001582},
     author = {Renke Liu and Rajesh Piplani and Carlos Toro}
     }
-
-Please consider citing our paper if you found it helpful ^-^
 
 ## Repository Overview
 
