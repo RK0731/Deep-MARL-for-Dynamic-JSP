@@ -7,6 +7,7 @@ Free download link: https://authors.elsevier.com/a/1hIY215N8SNAtk
 Please consider citing our paper if you found it helpful ^-^
 
     @article{LIU2023106294,
+    author = {Liu, Renke and Piplani, Rajesh and Toro, Carlos },
     title = {A deep multi-agent reinforcement learning approach to solve dynamic job shop scheduling problem},
     journal = {Computers & Operations Research},
     volume = {159},
@@ -15,7 +16,6 @@ Please consider citing our paper if you found it helpful ^-^
     issn = {0305-0548},
     doi = {https://doi.org/10.1016/j.cor.2023.106294},
     url = {https://www.sciencedirect.com/science/article/pii/S0305054823001582},
-    author = {Renke Liu and Rajesh Piplani and Carlos Toro}
     }
 
 ## Repository Overview
