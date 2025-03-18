@@ -6,10 +6,10 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 
 '''
-Dynamic arrival of jobs
+Create dynamic job arrival events
 '''
 
-class creation:
+class Creation:
     def __init__ (self, env, span, machine_list, pt_range, due_tightness, E_utliz, **kwargs):
         if 'seed' in kwargs:
             np.random.seed(kwargs['seed'])

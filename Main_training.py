@@ -2,15 +2,15 @@ import simpy
 import matplotlib.pyplot as plt
 import numpy as np
 
-import Asset_machine as Machine
-import Event_job_creation
-import Brain_sequencing
+from src.asset_machine import Machine
+import src.event_generator.event_job_creation as Event_job_creation
+from src import brain_sequencing
 
 '''
 Train deep MARL agents in simulation
 '''
 
-class shopfloor:
+class Shopfloor:
     def __init__(self,env,span,m_no,**kwargs):
         # STEP 1: create environment for simulation and control parameters
         self.env=env
@@ -20,7 +20,7 @@ class shopfloor:
 
         # STEP 2: create instances of machines
         for i in range(m_no):
-            expr1 = '''self.m_{} = Machine.machine(env, {}, print = 0)'''.format(i,i) # create machines
+            expr1 = '''self.m_{} = Machine(env, {}, print = 0)'''.format(i,i) # create machines
             exec(expr1)
             expr2 = '''self.m_list.append(self.m_{})'''.format(i) # add to machine list
             exec(expr2)
@@ -37,7 +37,7 @@ class shopfloor:
             exec(expr3)
 
         #STEP 5: speficy the type of deep MARL scheduler
-        self.brain = Brain_sequencing.brain(self.env, self.job_creator, self.m_list, self.span/10, self.span,
+        self.brain = brain_sequencing.brain(self.env, self.job_creator, self.m_list, self.span/10, self.span,
             TEST = 0, reward_function = 1, bsf_start = 0)
 
     # FINAL STEP: start the simulaiton, and plot the loss/ reward record
@@ -55,6 +55,6 @@ span = 10000 # duration of simulation/training
 scale = 10 # number of machines
 show = True
 # create the shop floor instance
-# the command of startig the simulation is included in shopfloor instance, run till there's no more events
-spf = shopfloor(env, span, scale,)
+# the command of startig the simulation is included in Shopfloor instance, run till there's no more events
+spf = Shopfloor(env, span, scale,)
 spf.simulation()

@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import sys
+from pathlib import Path
 import copy
 import matplotlib.pyplot as plt
 import torch
@@ -45,7 +46,7 @@ class brain:
             raise Exception
         '''
         chooose the architecture of DRL, then state and action funciton is determined accordlingly
-        and specify the address to store the trained state-dict
+        and specify the path to store the trained state-dict
         needs to be specified in kwargs, otherwise abstract networks + abstract state space
         there is an action_NN that perform the actual action and be trained
         and a target_NN to improve the stability of training
@@ -58,7 +59,7 @@ class brain:
             self.output_size = 4
             self.action_NN = network_TEST(self.input_size, self.output_size)
             self.target_NN = copy.deepcopy(self.action_NN)
-            self.address_seed = "{}\\trained_models\\TEST_DDQN_rwd"+str(kwargs['reward_function'])+".pt"
+            self.model_path = Path.cwd()/"trained_models"/f"TEST_DDQN_rwd{kwargs['reward_function']}.pt"
             self.build_state = self.state_direct
             #self.train = self.train_prioritized_DDQN
             self.train = self.train_Double_DQN
@@ -72,7 +73,7 @@ class brain:
             self.output_size = 4
             self.action_NN = network_value_based(self.input_size, self.output_size)
             self.target_NN = copy.deepcopy(self.action_NN)
-            self.address_seed = "{}\\trained_models\\DDQN_rwd"+str(kwargs['reward_function'])+".pt"
+            self.model_path = Path.cwd()/"trained_models"/f"DDQN_rwd{kwargs['reward_function']}.pt"
             self.build_state = self.state_direct
             self.train = self.train_Double_DQN
             self.action_DRL = self.action_direct
@@ -81,21 +82,21 @@ class brain:
 
         '''
         sometimes train based on trained parameters can save time
-        importing trained parameters from specified address
+        importing trained parameters from specified path
         '''
         if kwargs['bsf_start']: # import best for far trained parameters to kick off
             if kwargs['TEST']:
-                import_address = "{}\\trained_models\\bsf_TEST.pt"
+                import_path = Path.cwd()/"trained_models"/"bsf_TEST.pt"
             else:
-                import_address = "{}\\trained_models\\bsf_DDQN.pt"
-            self.action_NN.network.load_state_dict(torch.load(import_address.format(sys.path[0])))
-            print("IMPORT FROM:", import_address)
+                import_path = Path.cwd()/"trained_models"/"bsf_DDQN.pt"
+            self.action_NN.network.load_state_dict(torch.load(import_path))
+            print("IMPORT FROM:", import_path)
         '''
-        new address seed for storing the trained parameters, if specified
+        new path for storing the trained parameters, if specified
         '''
         if 'store_to' in kwargs:
-            self.address_seed = "{}\\trained_models\\" + str(kwargs['store_to']) + ".pt"
-            print("New address seed:", self.address_seed)
+            self.model_path = Path.cwd()/f"trained_models{kwargs['store_to']}.pt"
+            print("New path:", self.model_path)
         '''
         initialize all training parameters by default value
         '''
@@ -352,12 +353,10 @@ class brain:
         print('FINAL- replay_memory')
         print(tabulate(self.rep_memo, headers = ['s_t','a_t','s_t+1','r_t']))
         print('FINAL - size of replay memory:',len(self.rep_memo))
-        # specify the address to store the model / state_dict
-        address = self.address_seed.format(sys.path[0])
         # save the parameters of policy / action network after training
-        torch.save(self.action_NN.network.state_dict(), address)
+        torch.save(self.action_NN.network.state_dict(), self.model_path)
         # after the training, print out the setting of DRL architecture
-        print("Training terminated, store trained parameters to: {}".format(self.address_seed))
+        print("Training terminated, store trained parameters to: {}".format(self.model_path))
 
     # synchronize the ANN and TNN, and some settings
     def sync_network_process(self):
@@ -465,7 +464,7 @@ class brain:
     # print out the functions and classes used in the training
     def check_parameter(self):
         print('-------------  Training Setting Check  -------------')
-        print("Address seed:",self.address_seed)
+        print("Address seed:",self.model_path)
         print('Rwd.Func.:',self.m_list[0].reward_function.__name__)
         print('State Func.:',self.build_state.__name__)
         print('Action Func.:',self.action_DRL.__name__)

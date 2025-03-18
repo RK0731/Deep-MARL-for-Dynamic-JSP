@@ -2,11 +2,11 @@ import random
 import copy
 import numpy as np
 import simpy
-import Static_fitness
-import Static_spf
+import src.static_experiment.static_fitness as Static_fitness
+from src.static_experiment import static_spf
 
 
-class creation:
+class GA:
     def __init__(self, operation_sequence, processing_time, due_date, population_size, generation):
         # get the machine and job number from job's information
         self.m_no = len(set(np.concatenate(operation_sequence)))
@@ -42,7 +42,7 @@ class creation:
         for idx,rule in enumerate(good_start):
             # create the environment instance for simulation
             env = simpy.Environment()
-            good_start_spf = Static_spf.shopfloor(env, self.op_seed, self.pt_seed, self.due_date, sequencing_rule = rule)
+            good_start_spf = static_spf.Shopfloor(env, self.op_seed, self.pt_seed, self.due_date, sequencing_rule = rule)
             good_start_spf.simulation()
             print(good_start_spf.job_creator.schedule)
             self.population.append(good_start_spf.job_creator.schedule.copy())

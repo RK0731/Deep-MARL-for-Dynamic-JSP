@@ -1,20 +1,21 @@
 import simpy
 import sys
+from pathlib import Path
 import numpy as np
 from tabulate import tabulate
 import pandas as pd
 from pandas import DataFrame
 
-import Asset_machine as Machine
-import Rule_sequencing as Sequencing
-import Event_job_creation
-import Validation
+from src.asset_machine import Machine
+import src.rule_sequencing as Sequencing
+from src.event_generator.event_job_creation import Creation
+import src.validation as Validation
 
 '''
 Run the simulation and compare the result with other priority rules
 '''
 
-class shopfloor:
+class Shopfloor:
     def __init__(self, env, span, m_no, **kwargs):
         # STEP 1: create environment for simulation and control parameters
         self.env=env
@@ -24,15 +25,15 @@ class shopfloor:
 
         # STEP 2: create instances of machines
         for i in range(m_no):
-            expr1 = '''self.m_{} = Machine.machine(env, {}, print = 0)'''.format(i,i) # create machines
+            expr1 = '''self.m_{} = Machine(env, {}, print = 0)'''.format(i,i) # create machines
             exec(expr1)
             expr2 = '''self.m_list.append(self.m_{})'''.format(i) # add to machine list
             exec(expr2)
 
         # STEP 3: initialize the initial jobs, distribute jobs to workcenters
         if 'seed' in kwargs:
-            self.job_creator = Event_job_creation.creation\
-            (self.env, self.span, self.m_list, [1,50], 3, 0.9, seed=kwargs['seed'])
+            self.job_creator = Creation(
+                self.env, self.span, self.m_list, [1,50], 3, 0.9, seed=kwargs['seed'])
             #self.job_creator.initial_output()
         else:
             print("WARNING: seed is not fixed !!")
@@ -58,14 +59,14 @@ class shopfloor:
         if 'DRL' in kwargs and kwargs['DRL']:
             print("---> DRL Sequencing mode ON <---")
             self.sequencing_brain = Validation.DRL_sequencing(self.env, self.m_list, self.job_creator, self.span, \
-            TEST = 0, validated = 1, show = 0,  reward_function = 1)
+            TEST = False, validated = True, show = False,  reward_function = 1)
 
 
     def simulation(self):
         self.env.run()
 
 
-# dictionary to store shopfloors and production record
+# dictionary to store Shopfloors and production record
 spf_dict = {}
 production_record = {}
 # list of benchmarks 
@@ -92,7 +93,7 @@ for run in range(iteration):
     for idx,rule in enumerate(benchmark):
         # create the environment instance for simulation
         env = simpy.Environment()
-        spf = shopfloor(env, span, scale, sequencing_rule = rule, seed = seed)
+        spf = Shopfloor(env, span, scale, sequencing_rule = rule, seed = seed)
         spf.simulation()
         output_time, cumulative_tard, tard_mean, tard_max, tard_rate = spf.job_creator.tardiness_output()
         sum_record[run].append(cumulative_tard[-1])
@@ -101,7 +102,7 @@ for run in range(iteration):
         rate_record[run].append(tard_rate)
     # a run with DRL
     env = simpy.Environment()
-    spf = shopfloor(env, span, scale, DRL = True, seed = seed)
+    spf = Shopfloor(env, span, scale, DRL = True, seed = seed)
     spf.simulation()
     output_time, cumulative_tard, tard_mean, tard_max, tard_rate = spf.job_creator.tardiness_output()
     sum_record[run].append(cumulative_tard[-1])
@@ -148,12 +149,16 @@ if export_result:
     df_max = DataFrame(max_record, columns=title)
     #print(df_max)
     df_before_win_rate = DataFrame([winning_rate_b], columns=title)
-    address = sys.path[0]+'\\Thesis_figures\\RAW_experiment.xlsx'
-    Excelwriter = pd.ExcelWriter(address,engine="xlsxwriter")
+
+    save_path = Path.cwd()/'Thesis_figures'
+    if not save_path.exists:
+        save_path.mkdir()
+    save_path = save_path/'RAW_experiment.xlsx'
+    Excelwriter = pd.ExcelWriter(save_path, engine="xlsxwriter")
     dflist = [df_win_rate, df_sum, df_tardy_rate, df_max, df_before_win_rate]
     sheetname = ['win rate','sum', 'tardy rate', 'maximum','before win rate']
 
     for i,df in enumerate(dflist):
         df.to_excel(Excelwriter, sheet_name=sheetname[i], index=False)
     Excelwriter.save()
-    print('export to {}'.format(address))
+    print('export to {}'.format(save_path))

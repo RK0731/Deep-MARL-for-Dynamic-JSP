@@ -1,4 +1,4 @@
-import Static_genetic_algorithm
+from src.static_experiment.static_genetic_algorithm import GA
 import pandas as pd
 import time
 
@@ -12,11 +12,11 @@ population_size = 100
 generation = 50
 
 
-GA = Static_genetic_algorithm.creation(operation_sequence, processing_time, due_date, population_size, generation)
+ga_agent = GA(operation_sequence, processing_time, due_date, population_size, generation)
 
 start = time.time()
 
-GA.initialization()
-GA.evolution()
+ga_agent.initialization()
+ga_agent.evolution()
 
 print('CPU time for GA: ', time.time()-start)

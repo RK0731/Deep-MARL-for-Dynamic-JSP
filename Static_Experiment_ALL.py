@@ -1,10 +1,10 @@
-from Static_spf import shopfloor
+from src.static_experiment.static_spf import Shopfloor
 import simpy
 import sys
-import Static_genetic_algorithm
+from src.static_experiment.static_genetic_algorithm import GA
 import pandas as pd
 import time
-path = sys.path
+
 
 '''
 run experiments on static problem instances
@@ -29,7 +29,7 @@ no_record = []
 for idx,rule in enumerate(benchmark):
     # create the environment instance for simulation
     env = simpy.Environment()
-    spf = shopfloor(env, operation_sequence, processing_time, due_date, sequencing_rule = rule)
+    spf = Shopfloor(env, operation_sequence, processing_time, due_date, sequencing_rule = rule)
     spf.simulation()
     output_time, cumulative_tard, tard_mean, tard_max, tard_rate = spf.job_creator.tardiness_output()
     cnt = 0
@@ -49,7 +49,7 @@ for idx,rule in enumerate(benchmark):
 2. deep MARL / DRL approach 
 '''
 env = simpy.Environment()
-spf = shopfloor(env, operation_sequence, processing_time, due_date, validated = True)
+spf = Shopfloor(env, operation_sequence, processing_time, due_date, MR = True)
 spf.simulation()
 output_time, cumulative_tard, tard_mean, tard_max, tard_rate = spf.job_creator.tardiness_output()
 cnt = 0
@@ -75,7 +75,7 @@ print(no_record)
 '''
 population_size = 100
 generation = 50
-GA = Static_genetic_algorithm.creation(operation_sequence, processing_time, due_date, population_size, generation)
+ga_agent = GA(operation_sequence, processing_time, due_date, population_size, generation)
 start = time.time()
-GA.initialization()
-GA.evolution()
+ga_agent.initialization()
+ga_agent.evolution()

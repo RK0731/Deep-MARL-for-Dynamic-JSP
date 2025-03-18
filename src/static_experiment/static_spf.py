@@ -6,16 +6,16 @@ from tabulate import tabulate
 import pandas as pd
 from pandas import DataFrame
 
-import Rule_sequencing as Sequencing
-import Asset_machine as Machine
-import Static_job_creation
-import Validation
+import src.rule_sequencing as Sequencing
+from src.asset_machine import Machine
+import src.static_experiment.static_job_creation as Static_job_creation
+import src.validation as Validation
 
 '''
 Shop floor
 '''
 
-class shopfloor:
+class Shopfloor:
     def __init__(self, env, operation_sequence, processing_time, due_date, **kwargs):
         # STEP 1: create environment for simulation and control parameters
         self.env=env
@@ -24,7 +24,7 @@ class shopfloor:
 
         # STEP 2: create instances of machines
         for i in range(self.m_no):
-            expr1 = '''self.m_{} = Machine.machine(env, {}, print = 0)'''.format(i,i) # create machines
+            expr1 = '''self.m_{} = Machine(env, {}, print = 0)'''.format(i,i) # create machines
             exec(expr1)
             expr2 = '''self.m_list.append(self.m_{})'''.format(i) # add to machine list
             exec(expr2)
@@ -54,8 +54,9 @@ class shopfloor:
         # specify the architecture of DRL
         if 'MR' in kwargs and kwargs['MR']:
             print("---> Minimal Repetition mode ON <---")
-            self.sequencing_brain = Validation.DRL_sequencing(self.env, self.m_list, self.job_creator, 100, \
-            bsf_DDQN = 1, show = 0, reward_function = 3 )
+            self.sequencing_brain = Validation.DRL_sequencing(
+                self.env, self.m_list, self.job_creator, 100, 
+                bsf_DDQN = 1, show = 0, validated=True, reward_function=1)
 
 
     def simulation(self):

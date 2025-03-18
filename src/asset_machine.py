@@ -2,13 +2,13 @@ import simpy
 import numpy as np
 import torch
 from tabulate import tabulate
-import Rule_sequencing
+import src.rule_sequencing as Rule_sequencing
 
 '''
 Simulation of machine, able to immitate the job processing, machine idle and machine breakdown
 '''
 
-class machine:
+class Machine:
     def __init__(self, env, index, *args, **kwargs):
         # initialize the environment of simulation
         self.env = env
