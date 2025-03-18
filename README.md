@@ -1,6 +1,6 @@
 # Introduciton
 
-***Note on 2025 mar 18, simulatior in this repository is vulnerable to job-overstay which leads to training instability and failure, and no longer maintained. Kindly consider using our latest sim model for your training and experiment: <https://github.com/RK0731/DRLforDynamicScheduling/tree/main/srchttps://www.markdownguide.org>***
+***Note on 2025 mar 18, simulatior in this repository is vulnerable to job-overstay which leads to training instability and failure, and no longer maintained. Kindly consider using our latest sim model for your training and experiment: <https://github.com/RK0731/DRLforDynamicScheduling/tree/main/src>***
 
 Repository for the code of COR paper entitled **A Deep Multi-Agent Reinforcement Learning Approach to Solve Dynamic Job Shop Scheduling Problem**
 
